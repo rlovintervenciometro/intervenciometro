@@ -1,0 +1,36 @@
+{
+  "name": "intervenciometro-final",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@badrap/bar-of-progress": "~0.1.2",
+    "@material-ui/core": "~4.12.3",
+    "@material-ui/icons": "~4.11.2",
+    "@reduxjs/toolkit": "~1.7.1",
+    "firebase": "~9.1.3",
+    "lodash": "~4.17.21",
+    "moment": "~2.29.1",
+    "next": "12.2.4",
+    "react": "18.2.0",
+    "react-content-loader": "~6.0.3",
+    "react-cool-inview": "~2.0.8",
+    "react-dom": "18.2.0",
+    "react-icons": "~4.2.0",
+    "react-medium-image-zoom": "~4.3.5",
+    "react-redux": "~7.2.6",
+    "react-spinners": "~0.13.3",
+    "redux": "~4.1.2",
+    "styled-components": "~5.3.1"
+  },
+  "devDependencies": {
+    "babel-plugin-styled-components": "~1.13.1",
+    "eslint": "8.21.0",
+    "eslint-config-next": "12.2.4"
+  }
+}
