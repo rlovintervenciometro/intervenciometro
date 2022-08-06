@@ -8,6 +8,8 @@ export default function LoginInput({
   icon = null,
   placeholder = "",
   type = "text",
+  content,
+  setContent,
 }) {
   const [auxType, setAuxType] = useState(type);
   const [auxIcon, setAuxIcon] = useState(icon);
@@ -28,7 +30,12 @@ export default function LoginInput({
 
   return (
     <Container>
-      <Input placeholder={placeholder} type={auxType} />
+      <Input
+        value={content}
+        placeholder={placeholder}
+        type={auxType}
+        onChange={e => setContent(e.target.value)}
+      />
       {auxIcon && <IconButton onClick={onClickIcon}>{auxIcon}</IconButton>}
     </Container>
   );

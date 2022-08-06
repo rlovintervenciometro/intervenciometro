@@ -1,8 +1,5 @@
+import CoursesList from "../components/home/CoursesList";
+
 export default function Home() {
-  return (
-    <div>
-      <div />
-      hola
-    </div>
-  );
+  return <CoursesList />;
 }

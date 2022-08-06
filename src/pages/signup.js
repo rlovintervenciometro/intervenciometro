@@ -1,27 +1,85 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import styled from "styled-components";
 import Image from "next/image";
 import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import Button from "@material-ui/core/Button";
 import { useRouter } from "next/router";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { size } from "lodash";
+import { ClipLoader } from "react-spinners";
 import logoImage from "../../public/images/logo.png";
 import LoginInput from "../components/LoginInput";
 import colors from "../utils/colors";
+import validationEmail from "../utils/validationEmail";
+import { auth } from "../../firebase";
 
 export default function Signup() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState({});
 
   const onClickSignin = () => {
     router.push("/login");
   };
 
-  const signup = () => {};
+  const signup = () => {
+    const errors = {};
+    if (!emailInput || !passwordInput || !confirmPasswordInput) {
+      if (!emailInput) {
+        errors.email = true;
+        errors.emailMessage = "El correo es obligatorio";
+      }
+      if (!passwordInput) {
+        errors.password = true;
+        errors.passwordMessage = "La contraseña es obligatoria";
+      }
+      if (!confirmPasswordInput) {
+        errors.confirmPassword = true;
+        errors.confirmPasswordMessage = "La contraseña es obligatoria";
+      }
+    } else if (!validationEmail(emailInput.trim())) {
+      errors.invalidEmail = true;
+      errors.emailMessage = "Introduzca un correo válido";
+    } else if (passwordInput !== confirmPasswordInput) {
+      errors.password = true;
+      errors.passwordMessage = "Las contraseñas no coinciden";
+      errors.confirmPassword = true;
+      errors.confirmPasswordMessage = "Las contraseñas no coinciden";
+    } else if (size(passwordInput) < 6) {
+      errors.password = true;
+      errors.passwordMessage = "Mínimo 6 caracteres";
+      errors.confirmPassword = true;
+      errors.confirmPasswordMessage = "Mínimo 6 caracteres";
+    } else {
+      setLoading(true);
+      createUserWithEmailAndPassword(auth, emailInput.trim(), passwordInput)
+        .then(() => {
+          setLoading(false);
+        })
+        .catch(err => {
+          let message = "Ocurrió un error, inténtalo otra vez";
+          setLoading(false);
+          switch (err.code) {
+            case "auth/email-already-in-use":
+              message = "El correo ya está siendo utilizado";
+              break;
+            case "auth/internal-error":
+              message = "Ocurrió un error, inténtalo otra vez";
+              break;
+            default:
+              break;
+          }
+          errors.main = true;
+          errors.mainMessage = message;
+        });
+    }
+    setFormError(errors);
+  };
 
   return (
     <Container>
@@ -32,22 +90,49 @@ export default function Signup() {
           </LogoContainer>
         </LogoContainerHeader>
         <Title>Registro</Title>
-        <LoginInput placeholder="Correo" icon={<AlternateEmailIcon />} />
+        {formError?.main && (
+          <ErrorText style={{ textAlign: "center", marginBottom: "10px" }}>
+            {formError?.mainMessage}
+          </ErrorText>
+        )}
+        <LoginInput
+          content={emailInput}
+          setContent={setEmailInput}
+          placeholder="Correo"
+          icon={<AlternateEmailIcon />}
+        />
+        {(formError?.email || formError?.invalidEmail) && (
+          <ErrorText>{formError.emailMessage}</ErrorText>
+        )}
         <div style={{ marginBottom: "20px" }} />
         <LoginInput
+          content={passwordInput}
+          setContent={setPasswordInput}
           placeholder="Contraseña"
           type="password"
           icon={<VisibilityIcon />}
         />
+        {(formError?.password || formError?.passwordMessage) && (
+          <ErrorText>{formError.passwordMessage}</ErrorText>
+        )}
         <div style={{ marginBottom: "20px" }} />
         <LoginInput
+          content={confirmPasswordInput}
+          setContent={setConfirmPasswordInput}
           placeholder="Confirmar contraseña"
           type="password"
           icon={<VisibilityIcon />}
         />
+        {(formError?.confirmPassword || formError?.confirmPasswordMessage) && (
+          <ErrorText>{formError.confirmPasswordMessage}</ErrorText>
+        )}
         <ButtonSignupContainer>
           <ButtonSignup onClick={signup}>
-            <SignupText>Registrarte</SignupText>
+            {loading ? (
+              <ClipLoader color="white" size={20} />
+            ) : (
+              <SignupText>Registrarte</SignupText>
+            )}
           </ButtonSignup>
         </ButtonSignupContainer>
 
@@ -114,6 +199,7 @@ const ButtonSignup = styled(Button)`
     padding-top: 14px;
     padding-bottom: 14px;
     width: 90%;
+    height: 50px;
   }
 `;
 
@@ -144,4 +230,10 @@ const DontHaveAccountButton = styled.p`
   margin-left: 4px;
   font-size: 0.9rem;
   cursor: pointer;
+`;
+
+const ErrorText = styled.p`
+  font-size: 0.9rem;
+  color: red;
+  margin-top: 10px;
 `;

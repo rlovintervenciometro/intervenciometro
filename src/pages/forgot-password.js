@@ -1,22 +1,83 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Button, IconButton } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useRouter } from "next/router";
 import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import Image from "next/image";
+import ClipLoader from "react-spinners/ClipLoader";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import { makeStyles } from "@material-ui/core/styles";
+import { sendPasswordResetEmail } from "firebase/auth";
 import LoginInput from "../components/LoginInput";
 import colors from "../utils/colors";
 import forgotPasswordImage from "../../public/images/forgotPassword.png";
+import validationEmail from "../utils/validationEmail";
+import { auth } from "../../firebase";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export default function ForgotPassword() {
   const router = useRouter();
+  const [emailInput, setEmailInput] = useState("");
+  const [formError, setFormError] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
+  const [snackbarPosition, setSnackbarPosition] = useState({
+    vertical: "top",
+    horizontal: "center",
+  });
+
+  const { vertical, horizontal } = snackbarPosition;
 
   const goBack = () => {
     router.push("/login");
   };
 
-  const onPressSendCode = () => {};
+  const onPressSendCode = () => {
+    const errors = {};
+    if (!emailInput) {
+      errors.email = true;
+      errors.emailMessage = "El correo es obligatorio";
+    } else if (!validationEmail(emailInput)) {
+      errors.invalidEmail = true;
+      errors.emailMessage = "Introduzca un correo válido";
+    } else {
+      setLoading(true);
+      sendPasswordResetEmail(auth, emailInput?.trim())
+        .then(() => {
+          setLoading(false);
+          setShowConfirmationPopup(true);
+          setTimeout(() => {
+            setShowConfirmationPopup(false);
+          }, 4000);
+        })
+        .catch(err => {
+          let message = "Ha ocurrido un error";
+          switch (err.code) {
+            case "auth/user-not-found":
+              message = "Correo no registrado";
+              break;
+            case "auth/unknown":
+              message = "Ha ocurrido un error, inténtalo otra vez";
+              break;
+            default:
+              break;
+          }
+          setLoading(false);
+          errors.email = true;
+          errors.emailMessage = message;
+        });
+    }
+    setFormError(errors);
+  };
+
+  const handleClose = () => {
+    setShowConfirmationPopup(false);
+  };
 
   return (
     <Container>
@@ -27,12 +88,24 @@ export default function ForgotPassword() {
       </Header>
       <FormContainer>
         <Title>Reestablece tu contraseña</Title>
-        <LoginInput placeholder="Correo" icon={<AlternateEmailIcon />} />
+        <LoginInput
+          content={emailInput}
+          setContent={setEmailInput}
+          placeholder="Correo"
+          icon={<AlternateEmailIcon />}
+        />
+        {(formError?.email || formError?.emailMessage) && (
+          <ErrorText>{formError.emailMessage}</ErrorText>
+        )}
         <ButtonSendCodeContainer>
           <ButtonSendCode onClick={onPressSendCode}>
-            <ButtonSendCodeText>
-              Enviar código de recuperación
-            </ButtonSendCodeText>
+            {loading ? (
+              <ClipLoader color="white" size={20} />
+            ) : (
+              <ButtonSendCodeText>
+                Enviar código de recuperación
+              </ButtonSendCodeText>
+            )}
           </ButtonSendCode>
         </ButtonSendCodeContainer>
       </FormContainer>
@@ -43,6 +116,16 @@ export default function ForgotPassword() {
       </AbsoluteImage>
       <BottomLeftCircle />
       <TopRightCircle />
+      <Snackbar
+        open={showConfirmationPopup}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical, horizontal }}
+        key={vertical + horizontal}>
+        <Alert onClose={handleClose} severity="success">
+          {`Se ha enviado un correo a ${emailInput}. Si no le llega ningún correo, verifique su bandeja de Spam.`}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
@@ -121,4 +204,10 @@ const TopRightCircle = styled.div`
   top: -300px;
   border-radius: 100%;
   right: -260px;
+`;
+
+const ErrorText = styled.p`
+  font-size: 0.9rem;
+  color: red;
+  margin-top: 10px;
 `;

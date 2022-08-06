@@ -6,16 +6,20 @@ import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import Button from "@material-ui/core/Button";
 import { useRouter } from "next/router";
+import ClipLoader from "react-spinners/ClipLoader";
 import loginImage from "../../public/images/login.png";
 import logoImage from "../../public/images/logo.png";
 import LoginInput from "../components/LoginInput";
 import colors from "../utils/colors";
+import validationEmail from "../utils/validationEmail";
+import { auth, provider } from "../../firebase";
 
 export default function Login() {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const [formError, setFormError] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const onClickForgotPassword = () => {
     router.push("/forgot-password");
@@ -25,7 +29,43 @@ export default function Login() {
     router.push("/signup");
   };
 
-  const signin = () => {};
+  const signin = () => {
+    const errors = {};
+    if (!emailInput || !passwordInput) {
+      if (!emailInput) {
+        errors.email = true;
+        errors.emailMessage = "El correo es obligatorio";
+      }
+      if (!passwordInput) {
+        errors.password = true;
+        errors.passwordMessage = "La contraseña es obligatoria";
+      }
+    } else if (!validationEmail(emailInput.trim())) {
+      errors.invalidEmail = true;
+      errors.emailMessage = "Introduzca un correo válido";
+    } else {
+      setLoading(true);
+      signInWithEmailAndPassword(auth, emailInput.trim(), passwordInput)
+        .then(() => {})
+        .catch(err => {
+          let message = "Correo o contraseña incorrectos";
+          switch (err.code) {
+            case "auth/user-not-found":
+              message = "Correo no registrado";
+              break;
+            case "auth/unknown":
+              message = "Ha ocurrido un error, revisa tu conexión a internet";
+              break;
+            default:
+              break;
+          }
+          setLoading(false);
+          errors.main = true;
+          errors.mainMessage = message;
+        });
+    }
+    setFormError(errors);
+  };
 
   return (
     <Container>
@@ -41,7 +81,20 @@ export default function Login() {
           </LogoContainer>
         </LogoContainerHeader>
         <Title>Inicia sesión</Title>
-        <LoginInput placeholder="Correo" icon={<AlternateEmailIcon />} />
+        {(formError?.main || formError?.mainMessage) && (
+          <ErrorText style={{ textAlign: "center", marginBottom: "15px" }}>
+            {formError.mainMessage}
+          </ErrorText>
+        )}
+        <LoginInput
+          placeholder="Correo"
+          content={emailInput}
+          setContent={setEmailInput}
+          icon={<AlternateEmailIcon />}
+        />
+        {(formError?.email || formError?.invalidEmail) && (
+          <ErrorText>{formError.emailMessage}</ErrorText>
+        )}
         <ForgotYourPasswordContainer>
           <Button onClick={onClickForgotPassword}>
             <ForgotYourPasswordText>¿La olvidaste?</ForgotYourPasswordText>
@@ -51,10 +104,19 @@ export default function Login() {
           placeholder="Contraseña"
           type="password"
           icon={<VisibilityIcon />}
+          content={passwordInput}
+          setContent={setPasswordInput}
         />
+        {formError?.password && (
+          <ErrorText>{formError.passwordMessage}</ErrorText>
+        )}
         <ButtonSignInContainer>
           <ButtonSignin onClick={signin}>
-            <SigninText>Ingresar</SigninText>
+            {loading ? (
+              <ClipLoader color="white" size={20} />
+            ) : (
+              <SigninText>Ingresar</SigninText>
+            )}
           </ButtonSignin>
         </ButtonSignInContainer>
         <DontHaveAccountContainer>
@@ -156,6 +218,7 @@ const ButtonSignin = styled(Button)`
     padding-top: 14px;
     padding-bottom: 14px;
     width: 90%;
+    height: 50px;
   }
 `;
 
@@ -186,4 +249,10 @@ const DontHaveAccountButton = styled.p`
   margin-left: 4px;
   font-size: 0.9rem;
   cursor: pointer;
+`;
+
+const ErrorText = styled.p`
+  font-size: 0.9rem;
+  color: red;
+  margin-top: 10px;
 `;

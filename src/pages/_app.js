@@ -5,6 +5,8 @@ import GlobalStyle from "../styles/GlobalStyle";
 import store from "../context/store";
 import Theme from "../Theme";
 import colors from "../utils/colors";
+import { RouteGuard } from "../components/RouteGuard";
+import Layout from "../components/Layout";
 
 const progress = new ProgressBar({
   size: 4,
@@ -23,7 +25,11 @@ function MyApp({ Component, pageProps }) {
       <GlobalStyle />
       <Provider store={store}>
         <Theme>
-          <Component {...pageProps} />
+          <RouteGuard>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </RouteGuard>
         </Theme>
       </Provider>
     </>
