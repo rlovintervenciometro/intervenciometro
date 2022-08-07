@@ -49,7 +49,7 @@ export default function Avatar() {
       <Menu
         style={{
           marginTop: 70,
-          background: "rgba(0,0,0,0.6)",
+          /* background: "rgba(0,0,0,0.6)", */
         }}
         id="account-menu"
         anchorEl={anchorEl}

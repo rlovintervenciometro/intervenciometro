@@ -5,14 +5,19 @@ export const appSlice = createSlice({
   name: "app",
   initialState: {
     openProfilePopup: false,
+    openNewCourseModal: false,
   },
   reducers: {
     toogleOpenProfilePopup: (state, action) => {
       state.openProfilePopup = action.payload.openProfilePopup;
     },
+    toggleOpenNewCourseModal: (state, action) => {
+      state.openNewCourseModal = action.payload.openNewCourseModal;
+    },
   },
 });
 
-export const { toogleOpenProfilePopup } = appSlice.actions;
+export const { toogleOpenProfilePopup, toggleOpenNewCourseModal } =
+  appSlice.actions;
 
 export default appSlice.reducer;

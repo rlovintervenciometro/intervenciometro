@@ -3,11 +3,14 @@ import styled from "styled-components";
 import { IconButton } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
+import { useSelector } from "react-redux";
 import Avatar from "./Avatar";
 import { auth } from "../../firebase";
 import AddNewCourseButton from "./AddNewCourseButton";
 
 export default function Header() {
+  const userInfo = useSelector(state => state.user.userInfo);
+
   return (
     <Container>
       <IconButton>
@@ -19,7 +22,7 @@ export default function Header() {
           <SearchIcon style={{ color: "#C1C1C1" }} />
           <Input placeholder="Buscar cursos" />
         </SearchBarContainer>
-        <AddNewCourseButton />
+        {userInfo?.role == "teacher" && <AddNewCourseButton />}
         <Avatar />
       </RightContainer>
     </Container>
