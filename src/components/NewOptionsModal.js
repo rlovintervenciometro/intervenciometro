@@ -82,16 +82,20 @@ export default function NewOptionsModal() {
       title: "Agregar nuevo alumno a este curso",
       method: openNewStudent,
     }, */
-    {
+    /*  {
       title: "Agregar nueva participación",
       method: () => openNewParticipation(),
-    },
+    }, */
   ];
 
   if (userInfo?.role == "teacher" && courseId != undefined) {
     options.push({
       title: "Agregar nuevo alumno a este curso",
       method: () => openNewStudent(),
+    });
+    options.push({
+      title: "Agregar nueva participación",
+      method: () => openNewParticipation(),
     });
   }
 
@@ -102,6 +106,7 @@ export default function NewOptionsModal() {
       maxWidth={maxWidth}
       scroll="paper"
       onClose={closeModal}
+      keepMounted
       TransitionComponent={Transition}>
       <Container>
         <Header>

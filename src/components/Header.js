@@ -4,19 +4,41 @@ import { IconButton } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 import Avatar from "./Avatar";
 import { auth } from "../../firebase";
 import AddNewCourseButton from "./AddNewCourseButton";
+import HeaderTab from "./HeaderTab";
 
 export default function Header() {
+  const router = useRouter();
   const userInfo = useSelector(state => state.user.userInfo);
+  const { courseId } = router.query;
+
+  const tabs = [
+    {
+      label: "Alumnos",
+      path: "students",
+    },
+    {
+      label: "Participaciones",
+      path: "participations",
+    },
+  ];
 
   return (
     <Container>
-      <IconButton>
+      {/*  <IconButton>
         <MenuIcon fontSize="large" />
-      </IconButton>
-      <Title>Tu lista de cursos</Title>
+      </IconButton> */}
+      <Title onClick={() => router.push("/")}>Tu lista de cursos</Title>
+      {/* {courseId != null && courseId != undefined && (
+        <TabsContainer>
+          {tabs.map((item, index) => (
+            <HeaderTab key={index} item={item} />
+          ))}
+        </TabsContainer>
+      )} */}
       <RightContainer>
         {/* <SearchBarContainer>
           <SearchIcon style={{ color: "#C1C1C1" }} />
@@ -37,6 +59,7 @@ const Container = styled.header`
   flex-direction: row;
   align-items: center;
   background-color: white;
+  justify-content: space-between;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   height: 70px;
   padding-left: 1%;
@@ -46,14 +69,15 @@ const Container = styled.header`
 const Title = styled.p`
   font-weight: 500;
   font-size: 1rem;
+  cursor: pointer;
 `;
 
 const RightContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  flex: 1;
   justify-content: flex-end;
+  flex: 1;
 `;
 const SearchBarContainer = styled.div`
   display: flex;
@@ -78,4 +102,13 @@ const Input = styled.input`
   ::placeholder {
     color: #94a0ad;
   }
+`;
+
+const TabsContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 `;

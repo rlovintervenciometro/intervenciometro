@@ -10,6 +10,7 @@ export default function StudentItem({
   type,
   setSelectedStudent,
   selectedStudent,
+  setStep,
 }) {
   const router = useRouter();
   const userInfo = useSelector(state => state.user.userInfo);
@@ -17,8 +18,16 @@ export default function StudentItem({
   const { courseId } = router.query;
 
   const onClick = () => {
-    if (type == "new-student" && courseId != undefined) {
-      setSelectedStudent(student);
+    if (
+      (type == "new-student" || type == "new-participation") &&
+      courseId != undefined
+    ) {
+      if (type == "new-participation") {
+        setStep(2);
+        setSelectedStudent(student);
+      } else {
+        setSelectedStudent(student);
+      }
     }
   };
 

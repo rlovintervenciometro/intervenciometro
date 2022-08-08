@@ -3,10 +3,7 @@ import styled from "styled-components";
 import AddIcon from "@material-ui/icons/Add";
 import { useDispatch } from "react-redux";
 import colors from "../utils/colors";
-import {
-  toggleOpenNewCourseModal,
-  toggleOpenNewOptionsModal,
-} from "../context/reducers/appSlice";
+import { toggleOpenNewOptionsModal } from "../context/reducers/appSlice";
 
 export default function AddNewCourseButton() {
   const dispatch = useDispatch();

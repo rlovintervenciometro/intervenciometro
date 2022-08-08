@@ -16,6 +16,8 @@ import { makeStyles } from "@material-ui/core";
 import Header from "../../components/coursePage/Header";
 import { db } from "../../../firebase";
 import StudentsList from "../../components/coursePage/StudentsList";
+import HeaderTab from "../../components/HeaderTab";
+import ParticipationsList from "../../components/coursePage/ParticipationsList";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,6 +47,17 @@ const useStyles = makeStyles(theme => ({
 
 const actions = [{ icon: <FileCopyIcon />, name: "Copy" }];
 
+const tabs = [
+  {
+    label: "Alumnos",
+    path: "students",
+  },
+  {
+    label: "Participaciones",
+    path: "participations",
+  },
+];
+
 export default function CoursePage() {
   const classes = useStyles();
   const userInfo = useSelector(state => state.user.userInfo);
@@ -52,18 +65,19 @@ export default function CoursePage() {
   const [direction, setDirection] = useState("up");
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [view, setView] = useState("students");
   const router = useRouter();
   const isMounted = useRef(false);
   const { courseId } = router.query;
-
-  console.log("courseInfo: ", courseInfo);
-
+  console.log("view1: ", view);
   useEffect(() => {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
     };
   }, []);
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (userInfo != null) {
@@ -143,7 +157,13 @@ export default function CoursePage() {
   return (
     <Container>
       <Header course={courseInfo} />
-      <StudentsList course={courseInfo} />
+      <TabsContainer>
+        {tabs.map((item, index) => (
+          <HeaderTab key={index} item={item} setView={setView} />
+        ))}
+      </TabsContainer>
+      <ParticipationsList course={courseInfo} view={view} />
+      <StudentsList course={courseInfo} view={view} />
     </Container>
   );
 }
@@ -182,3 +202,13 @@ const CustomButton = styled(Button)`
 `;
 
 const ButtonText = styled.p``;
+
+const TabsContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 25px;
+`;

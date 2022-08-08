@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
-import { ClipLoader } from "react-spinners";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Image from "next/image";
+import { ClipLoader } from "react-spinners";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
-import StudentItem from "./StudentItem";
+import ParticipationItem from "./ParticipationItem";
 
-export default function StudentsList({ course, view }) {
+export default function ParticipationsList({ course, view }) {
   const userInfo = useSelector(state => state.user.userInfo);
-  const [students, setStudents] = useState(null);
+  const [participations, setParticipations] = useState(null);
   const isMounted = useRef(false);
-  const { studentsQuantity } = course;
 
   useEffect(() => {
     isMounted.current = true;
@@ -21,16 +20,16 @@ export default function StudentsList({ course, view }) {
   }, []);
 
   useEffect(() => {
-    const studentsReference = collection(
+    const participationsReference = collection(
       db,
       "organizations",
       userInfo?.organizationId,
       "courses",
       course?.id,
-      "students",
+      "participations",
     );
 
-    const q = query(studentsReference, orderBy("name", "asc"));
+    const q = query(participationsReference, orderBy("createAt", "desc"));
 
     const suscriber = onSnapshot(
       q,
@@ -43,10 +42,10 @@ export default function StudentsList({ course, view }) {
             tempArray.push(object);
           });
           if (isMounted.current) {
-            setStudents(tempArray);
+            setParticipations(tempArray);
           }
         } else if (isMounted.current) {
-          setStudents([]);
+          setParticipations([]);
         }
       },
       err => {
@@ -59,23 +58,9 @@ export default function StudentsList({ course, view }) {
     };
   }, []);
 
-  const getQuantity = () => {
-    if (studentsQuantity != null) {
-      if (studentsQuantity != 1) {
-        return `${studentsQuantity} alumnos`;
-      }
-      return "1 alumno";
-    }
-    return "0 alumnos";
-  };
-
   return (
     <Container view={view}>
-      <QuantityContainer>
-        <Quantity>{getQuantity()}</Quantity>
-        <Line />
-      </QuantityContainer>
-      {students == null ? (
+      {participations == null ? (
         <div
           style={{
             marginTop: "60px",
@@ -86,7 +71,7 @@ export default function StudentsList({ course, view }) {
           }}>
           <ClipLoader size={40} />
         </div>
-      ) : students?.length == 0 ? (
+      ) : participations?.length == 0 ? (
         <div>
           <ImageContainer>
             <Image
@@ -98,8 +83,8 @@ export default function StudentsList({ course, view }) {
           <Message>No hay alumnos registrados en este curso</Message>
         </div>
       ) : (
-        students.map((item, index) => (
-          <StudentItem key={`${item.id}_${index}`} student={item} type="list" />
+        participations?.map((item, index) => (
+          <ParticipationItem key={`${item.id}_${index}`} participation={item} />
         ))
       )}
     </Container>
@@ -107,31 +92,8 @@ export default function StudentsList({ course, view }) {
 }
 
 const Container = styled.div`
-  display: ${props => (props.view == "students" ? "block" : "none")};
+  display: ${props => (props.view == "students" ? "none" : "block")};
   margin-top: 20px;
-`;
-
-const QuantityContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  margin-top: 15px;
-  margin-bottom: 15px;
-`;
-
-const Quantity = styled.p`
-  font-weight: 600;
-  font-size: 1rem;
-  font-family: "Poppins", sans-serif;
-`;
-
-const Line = styled.div`
-  flex: 1;
-  height: 3px;
-  margin-left: 10px;
-
-  background-color: #c1c1c1;
 `;
 
 const ImageContainer = styled.div`
