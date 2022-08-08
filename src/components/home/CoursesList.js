@@ -5,7 +5,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import { useDispatch, useSelector } from "react-redux";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import { HashLoader } from "react-spinners";
 import { auth, db } from "../../../firebase";
 import withoutCoursesImage from "../../../public/images/withoutCourses.png";
@@ -46,7 +52,11 @@ export default function CoursesList() {
   }, []);
 
   useEffect(() => {
-    const q = query(coursesRef, orderBy("name", "asc"));
+    const q = query(
+      coursesRef,
+      where("ownerId", "==", user?.uid),
+      orderBy("name", "asc"),
+    );
 
     const suscriber = onSnapshot(q, snapshot => {
       if (!snapshot.empty) {
