@@ -137,6 +137,7 @@ const Container = styled.main`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  padding-bottom: 120px;
 
   @media ${props => props.theme.breakpoints.xxl} {
   }
@@ -159,7 +160,7 @@ const ImageContainer = styled.div`
 
 const RightContainer = styled.div`
   height: 100vh;
-  padding-top: 120px;
+  padding-top: 80px;
   width: 65%;
   max-width: 500px;
 `;

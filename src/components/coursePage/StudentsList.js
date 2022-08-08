@@ -13,6 +13,8 @@ export default function StudentsList({ course }) {
   const isMounted = useRef(false);
   const { studentsQuantity } = course;
 
+  console.log("students: ", students);
+
   useEffect(() => {
     isMounted.current = true;
     return () => {
@@ -23,7 +25,7 @@ export default function StudentsList({ course }) {
   useEffect(() => {
     const studentsReference = collection(
       db,
-      "organization",
+      "organizations",
       userInfo?.organizationId,
       "courses",
       course?.id,
@@ -64,7 +66,7 @@ export default function StudentsList({ course }) {
       if (studentsQuantity != 1) {
         return `${studentsQuantity} alumnos`;
       }
-      return "0 alumnos";
+      return "1 alumno";
     }
     return "0 alumnos";
   };
@@ -99,14 +101,16 @@ export default function StudentsList({ course }) {
         </div>
       ) : (
         students.map((item, index) => (
-          <StudentItem key={`${item.id}_${index}`} student={item} />
+          <StudentItem key={`${item.id}_${index}`} student={item} type="list" />
         ))
       )}
     </Container>
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  margin-top: 20px;
+`;
 
 const QuantityContainer = styled.div`
   display: flex;
@@ -114,6 +118,7 @@ const QuantityContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   margin-top: 15px;
+  margin-bottom: 15px;
 `;
 
 const Quantity = styled.p`

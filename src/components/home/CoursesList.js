@@ -136,10 +136,10 @@ const Container = styled.div`
 
 const ImageContainer = styled.div`
   position: relative;
-  height: 450px;
-  width: 500px;
+  height: 400px;
+  width: 450px;
   margin-bottom: 30px;
-  margin-top: 40px;
+  margin-top: 20px;
 `;
 
 const Message = styled.p`

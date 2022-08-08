@@ -18,10 +18,10 @@ export default function Header() {
       </IconButton>
       <Title>Tu lista de cursos</Title>
       <RightContainer>
-        <SearchBarContainer>
+        {/* <SearchBarContainer>
           <SearchIcon style={{ color: "#C1C1C1" }} />
           <Input placeholder="Buscar cursos" />
-        </SearchBarContainer>
+        </SearchBarContainer> */}
         {userInfo?.role == "teacher" && <AddNewCourseButton />}
         <Avatar />
       </RightContainer>

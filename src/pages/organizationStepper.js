@@ -74,19 +74,22 @@ export default function OrganizationStepper() {
   useEffect(() => {
     if (user != null) {
       const userDoc = doc(db, "users", user?.uid);
-      getDoc(userDoc)
-        .then(res => {
+
+      onSnapshot(
+        userDoc,
+        res => {
           if (res.exists()) {
             router.push("/");
           } else {
-            const object = res.data();
-            object.id = res.id;
-            setUserInfo(object);
+            /* const object = res.data();
+          object.id = res.id; */
+            setUserInfo("");
           }
-        })
-        .catch(err => {
+        },
+        err => {
           console.log("Err1: ", err);
-        });
+        },
+      );
     }
   }, []);
 

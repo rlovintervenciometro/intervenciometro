@@ -6,6 +6,8 @@ import Header from "./Header";
 import NewCourseModal from "./NewCourseModal";
 import { db, auth } from "../../firebase";
 import { setUserInfo } from "../context/reducers/userInfo";
+import NewOptionsModal from "./NewOptionsModal";
+import NewStudentModal from "./NewStudentModal";
 
 export default function Layout({ children }) {
   const userInfo = useSelector(state => state.user.userInfo);
@@ -17,16 +19,17 @@ export default function Layout({ children }) {
   const paths = [...publicPaths, ...otherPaths];
   const path = router?.asPath?.split("?")[0];
 
+  console.log("userInfo layout: ", userInfo);
+
   useEffect(() => {
     if (user != null) {
       const userDoc = doc(db, "users", user?.uid);
       getDoc(userDoc)
         .then(res => {
-          if (!res.exists()) {
-            router.push("/organizationStepper");
-          } else {
+          if (res.exists()) {
             const object = res.data();
             object.id = res.id;
+            console.log("llamando bro");
             dispatch(
               setUserInfo({
                 userInfo: object,
@@ -38,13 +41,15 @@ export default function Layout({ children }) {
           console.log("Err: ", err);
         });
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
-      {!paths.includes(path) && <Header />}
+      {!paths.includes(path) && userInfo != null && <Header />}
       <main>{children}</main>
-      {!paths.includes(path) && <NewCourseModal />}
+      {!paths.includes(path) && userInfo != null && <NewCourseModal />}
+      {!paths.includes(path) && userInfo != null && <NewOptionsModal />}
+      {!paths.includes(path) && userInfo != null && <NewStudentModal />}
     </>
   );
 }
