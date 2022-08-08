@@ -13,8 +13,6 @@ function RouteGuard({ children }) {
   const [authorized, setAuthorized] = useState(true);
   const [login, setLogin] = useState(null);
 
-  console.log("login autenticado: ", login);
-
   const authCheck = url => {
     // redirect to login page if accesing a private page and not logged in
     const publicPaths = ["/login", "/forgot-password", "/signup"];

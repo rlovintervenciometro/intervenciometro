@@ -17,6 +17,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import { ClipLoader } from "react-spinners";
 import { addDoc, collection } from "firebase/firestore";
+import { useRouter } from "next/router";
 import { auth, db } from "../../firebase";
 import { toggleOpenNewCourseModal } from "../context/reducers/appSlice";
 import colors from "../utils/colors";
@@ -32,6 +33,7 @@ function Alert(props) {
 const posibleWidth = ["xs", "sm", "md", "lg", "xl"];
 
 export default function NewCourseModal() {
+  const router = useRouter();
   const openNewCourseModal = useSelector(state => state.app.openNewCourseModal);
   const userInfo = useSelector(state => state.user.userInfo);
   const [fullWidth, setFullWidth] = useState(true);
@@ -94,6 +96,7 @@ export default function NewCourseModal() {
 
       await addDoc(coursesReference, payload)
         .then(res => {
+          router.push("/");
           setShowSuccessSnackbar(true);
           setLoading(false);
           closeModal();
