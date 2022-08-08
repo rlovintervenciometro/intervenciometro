@@ -204,7 +204,7 @@ export default function NewParticipationModal() {
         autoHideDuration={3000}
         onClose={() => setShowSuccessSnackbar(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        key={"bottom" + "center"}>
+      >
         <Alert onClose={() => setShowSuccessSnackbar(false)} severity="success">
           Participación creada correctamente
         </Alert>
@@ -214,7 +214,7 @@ export default function NewParticipationModal() {
         autoHideDuration={3000}
         onClose={() => setShowErrorSnackbar(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        key={"bottom" + "center"}>
+      >
         <Alert onClose={() => setShowErrorSnackbar(false)} severity="error">
           Ocurrió un error, inténtalo de nuevo
         </Alert>

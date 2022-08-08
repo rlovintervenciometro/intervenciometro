@@ -19,7 +19,11 @@ export default function NewParticipationForm({
   loading,
   setLoading,
 }) {
+
+  console.log("formData: ",formData)
+
   const changeScore = value => {
+    console.log("value: ",value)
     setFormData({
       ...formData,
       score: value,
@@ -62,6 +66,7 @@ export default function NewParticipationForm({
         <RadiosContainer>
           {scores?.map((item, index) => (
             <div
+              key={`${item.value}_${index}`}
               style={{
                 display: "flex",
                 flexDirection: "row",

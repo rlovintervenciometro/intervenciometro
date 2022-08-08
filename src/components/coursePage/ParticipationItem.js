@@ -16,6 +16,9 @@ const Transition = React.forwardRef((props, ref) => (
 const posibleWidth = ["xs", "sm", "md", "lg", "xl"];
 
 export default function ParticipationItem({ participation }) {
+
+  console.log("participation: ",participation)
+
   const [showModal, setShowModal] = useState(false);
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState(posibleWidth[2]);
@@ -32,7 +35,8 @@ export default function ParticipationItem({ participation }) {
 
   const getScore = () => {
     const { score } = participation;
-    const index = scores?.findIndex(item => (item.value = score));
+    const index = scores?.findIndex(item => (item.value == score));
+
     if (index != -1) {
       return scores[index].label;
     }
